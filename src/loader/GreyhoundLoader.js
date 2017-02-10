@@ -109,9 +109,6 @@ Potree.GreyhoundLoader.load = function load(url, callback) {
                     scale = Math.min(scale[0], scale[1], scale[2]);
                 }
 
-                console.log('Scale:', scale);
-                console.log('Offset:', offset);
-
 				var baseDepth = Math.max(8, greyhoundInfo.baseDepth);
 
 				// Ideally we want to change this bit completely, since
@@ -165,9 +162,9 @@ Potree.GreyhoundLoader.load = function load(url, callback) {
 				var boundingBox = new THREE.Box3(
 					new THREE.Vector3().fromArray(bounds, 0),
 					new THREE.Vector3().fromArray(bounds, 3));
-				
+
 				var offset = boundingBox.min.clone();
-				
+
 				boundingBox.max.sub(boundingBox.min);
 				boundingBox.min.set(0, 0, 0);
 
@@ -177,6 +174,10 @@ Potree.GreyhoundLoader.load = function load(url, callback) {
 
 				pgg.scale = scale;
 				pgg.offset = offset;
+
+                console.log('Scale:', scale);
+                console.log('Offset:', offset);
+                console.log('Bounds:', boundingBox);
 
 				pgg.loader = new Potree.GreyhoundBinaryLoader(
                         version, boundingBox, pgg.scale);
