@@ -9,8 +9,7 @@ var getQueryParam = function(name) {
     name = name.replace(/[\[\]]/g, "\\$&");
     var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
         results = regex.exec(window.location.href);
-    if (!results) return null;
-    if (!results[2]) return '';
+    if (!results || !results[2]) return null;
     return decodeURIComponent(results[2].replace(/\+/g, " "));
 }
 
@@ -55,7 +54,7 @@ var createSchema = function(attributes) {
  * @param loadingFinishedListener executed after loading the binary has been finished
  */
 Potree.GreyhoundLoader.load = function load(url, callback) {
-	var HIERARCHY_STEP_SIZE = 4;
+	var HIERARCHY_STEP_SIZE = 5;
 
 	try {
 		// We assume everything ater the string 'greyhound://' is the server url
@@ -99,18 +98,14 @@ Potree.GreyhoundLoader.load = function load(url, callback) {
                 var height= bounds[5] - bounds[2];
                 var radius = width / 2;
 
-                var scale = greyhoundInfo.scale;
-                if (!scale) {
-					//scale = 1;
-                    if (radius < 2500) scale = 0.01;
-                    else if (radius < 10000) scale = 0.1;
-                    else scale = 1.0;
-                } else if (Array.isArray(scale)) {
+                var scale = greyhoundInfo.scale || .01;
+                if (Array.isArray(scale)) {
                     scale = Math.min(scale[0], scale[1], scale[2]);
                 }
 
-                console.log('Scale:', scale);
-                console.log('Offset:', offset);
+                if (getQueryParam('scale')) {
+                    scale = parseFloat(getQueryParam('scale'));
+                }
 
 				var baseDepth = Math.max(8, greyhoundInfo.baseDepth);
 
@@ -165,11 +160,17 @@ Potree.GreyhoundLoader.load = function load(url, callback) {
 				var boundingBox = new THREE.Box3(
 					new THREE.Vector3().fromArray(bounds, 0),
 					new THREE.Vector3().fromArray(bounds, 3));
-				
-				var offset = boundingBox.min.clone();
-				
-				boundingBox.max.sub(boundingBox.min);
-				boundingBox.min.set(0, 0, 0);
+
+                var min = boundingBox.min.clone();
+                var max = boundingBox.max.clone();
+                var offset = new THREE.Vector3().fromArray([
+                    min.x + (max.x - min.x) / 2,
+                    min.y + (max.y - min.y) / 2,
+                    min.z + (max.z - min.z) / 2
+                ]);
+
+                console.log('Scale:', scale);
+                console.log('Offset:', offset);
 
 				pgg.projection = greyhoundInfo.srs;
 				pgg.boundingBox = boundingBox;

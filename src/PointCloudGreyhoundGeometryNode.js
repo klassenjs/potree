@@ -62,16 +62,16 @@ Potree.PointCloudGreyhoundGeometryNode.prototype.getChildren = function() {
 
 Potree.PointCloudGreyhoundGeometryNode.prototype.getURL = function() {
     var schema = this.pcoGeometry.schema;
+	let bounds = this.boundingBox.clone();
 
-	let bbSize = this.boundingBox.getSize();
-		
-	let bounds = this.boundingBox.clone()
-	bounds.min.sub(this.pcoGeometry.boundingBox.getCenter());
-	bounds.max.sub(this.pcoGeometry.boundingBox.getCenter());
-		
-	if(this.scale){
-		bounds.min.multiplyScalar( 1 / this.scale);
-		bounds.max.multiplyScalar( 1 / this.scale);
+    if (this.offset) {
+        bounds.min.sub(this.offset);
+        bounds.max.sub(this.offset);
+    }
+
+	if (this.scale) {
+		bounds.min.multiplyScalar(1 / this.scale);
+		bounds.max.multiplyScalar(1 / this.scale);
 	}
 
     var boundsString =
@@ -89,12 +89,12 @@ Potree.PointCloudGreyhoundGeometryNode.prototype.getURL = function() {
     if (this.scale) {
         url += '&scale=' + this.scale;
     }
-	{
-		//let offset = this.offset.clone().add(bbSize.clone().multiplyScalar(0.5));
-		let offset = this.pcoGeometry.offset.clone().add(this.pcoGeometry.boundingBox.getSize().multiplyScalar(0.5));
+
+    if (this.offset) {
+        let offset = this.offset;
 		url += '&offset=[' + offset.x + ',' + offset.y + ',' + offset.z + ']';
 	}
-	
+
 	if(this.level === 1){
 		let a = 1;
 	}
@@ -238,15 +238,17 @@ Potree.PointCloudGreyhoundGeometryNode.prototype.loadHierarchyThenPoints =
 	if (this.level % this.pcoGeometry.hierarchyStepSize === 0) {
         var depthBegin = this.level + this.pcoGeometry.baseDepth;
         var depthEnd = depthBegin + this.pcoGeometry.hierarchyStepSize + 2;
-		
-        let bbSize = this.boundingBox.getSize();
-		let bounds = new THREE.Box3(
-			bbSize.clone().multiplyScalar(-0.5),
-			bbSize.clone().multiplyScalar(0.5));
-			
-		if(this.scale){
-			bounds.min.multiplyScalar( 1 / this.scale);
-			bounds.max.multiplyScalar( 1 / this.scale);
+
+		let bounds = this.boundingBox.clone();
+
+        if (this.offset) {
+            bounds.min.sub(this.offset);
+            bounds.max.sub(this.offset);
+        }
+
+		if (this.scale) {
+			bounds.min.multiplyScalar(1 / this.scale);
+			bounds.max.multiplyScalar(1 / this.scale);
 		}
 
         var boundsString =
@@ -257,16 +259,16 @@ Potree.PointCloudGreyhoundGeometryNode.prototype.loadHierarchyThenPoints =
             'hierarchy?bounds=[' + boundsString + ']' +
             '&depthBegin=' + depthBegin +
             '&depthEnd=' + depthEnd;
-			
+
 		if (this.scale) {
 			hurl += '&scale=' + this.scale;
 		}
-		
-		{
-			let offset = this.offset.clone().add(bbSize.clone().multiplyScalar(0.5));
+
+        if (this.offset) {
+            let offset = this.offset;
 			hurl += '&offset=[' + offset.x + ',' + offset.y + ',' + offset.z + ']';
 		}
-			
+
 		var xhr = new XMLHttpRequest();
 		xhr.open('GET', hurl, true);
 
