@@ -297,11 +297,13 @@ export class PropertiesPanel{
 			this.addVolatileListener(material, "backface_changed", update);
 			update();
 
+			/* JSK: 2019-09-06: Errors out on EPT
 			let blockBackface = $('#materials_backface_container');
 			blockBackface.css('display', 'none');
 			if (pointcloud.pcoGeometry.pointAttributes.hasNormals()) {
 				blockBackface.css('display', 'block');
 			}
+			*/
 			/*
 			opt.checkboxradio({
 				clicked: (event, ui) => {
