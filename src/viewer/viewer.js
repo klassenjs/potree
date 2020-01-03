@@ -961,7 +961,7 @@ export class Viewer extends EventDispatcher{
 		if (isVisible) {
 			renderArea.css('left', '0px');
 		} else {
-			renderArea.css('left', '300px');
+			renderArea.css('left', '400px');
 		}
 	};
 
@@ -989,7 +989,7 @@ export class Viewer extends EventDispatcher{
 		let viewer = this;
 		let sidebarContainer = $('#potree_sidebar_container');
 		sidebarContainer.load(new URL(Potree.scriptPath + '/sidebar.html').href, () => {
-			sidebarContainer.css('width', '300px');
+			sidebarContainer.css('width', '400px');
 			sidebarContainer.css('height', '100%');
 
 			let imgMenuToggle = document.createElement('img');
