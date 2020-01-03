@@ -97,7 +97,15 @@ export class Viewer extends EventDispatcher{
 			7: { visible: true, name: 'low point(noise)' },
 			8: { visible: true, name: 'key-point' },
 			9: { visible: true, name: 'water' },
-			12: { visible: true, name: 'overlap' }
+			10: { visible: true, name: 'rail' },
+			11: { visible: true, name: 'road surface' },
+			12: { visible: true, name: 'overlap' },
+			13: { visible: true, name: 'wire-guard' },
+			14: { visible: true, name: 'wire-conductor' },
+			15: { visible: true, name: 'transmission tower' },
+			16: { visible: true, name: 'wire-structure' },
+			17: { visible: true, name: 'bridge deck' },
+			18: { visible: true, name: 'high noise' }
 		};
 
 		this.moveSpeed = 10;
